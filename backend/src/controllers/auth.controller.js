@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/apiResponse.utils.js"
 import { generateAuthTokens } from "../services/auth.service.js"
 import { RefreshToken } from "../models/refreshToken.model.js"
 import { hashToken } from "../utils/hash.utils.js"
-import { env } from "../config/env.js"
+import { env } from "../config/env.config.js"
 import ms from "ms"
 import { logInfo, logWarn } from "../utils/logHelper.utils.js"
 
