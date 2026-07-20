@@ -51,8 +51,6 @@ export const generateAndRefreshToken = async (user, req) => {
         Date.now() + ms(env.refreshTokenSecret.expiresIn)
     );
 
-
-    // Revoke existing refresh tokens only for the same device
     const deviceInfo = req.headers["user-agent"] || null;
     await RefreshToken.updateMany(
         { userId: user._id, deviceInfo, isRevoked: false },
