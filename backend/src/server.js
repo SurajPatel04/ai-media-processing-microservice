@@ -2,7 +2,8 @@ import dotenv from "dotenv";
 import app from "./app.js";
 dotenv.config();
 
-import connectDB from "./config/db.js";
+import connectDB from "./config/db.config.js";
+import "./queues/queue.events.js";
 
 
 const PORT = Number(process.env.PORT) || 8000;

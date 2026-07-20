@@ -1,10 +1,11 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { env } from "./config/env.js";
+import { env } from "./config/env.config.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import jobRouter from "./routes/job.route.js";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(
 // routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/jobs", jobRouter);
 
 app.use((req, res) => {
     res.status(404).json({
