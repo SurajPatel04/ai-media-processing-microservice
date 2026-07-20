@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+.env
+.env.*
+!.env-sample
+coverage
+__tests__
+gcp-key.json
