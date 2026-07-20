@@ -96,8 +96,50 @@ const jobSchema = new mongoose.Schema(
             default: null,
         },
 
+        scene: {
+            type: String,
+            default: null,
+        },
+
+        dominantObjects: {
+            type: [String],
+            default: [],
+        },
+
+        peopleCount: {
+            type: Number,
+            default: 0,
+        },
+
+        isIndoor: {
+            type: Boolean,
+            default: null,
+        },
+
+        confidence: {
+            type: Number,
+            default: null,
+        },
+
         labels: {
             type: [String],
+            default: [],
+        },
+
+        labelDetails: {
+            type: [{
+                description: String,
+                score: Number
+            }],
+            default: [],
+        },
+
+        detectedObjects: {
+            type: [{
+                name: String,
+                count: Number,
+                confidence: Number
+            }],
             default: [],
         },
 
@@ -137,6 +179,15 @@ const jobSchema = new mongoose.Schema(
         },
 
         completedAt: Date,
+
+        flaggedNotifiedAt: Date,
+
+        metadata: {
+            processingTimeMs: Number,
+            captionModel: String,
+            visionProvider: String,
+            processedAt: Date,
+        },
     },
     {
         timestamps: true,
