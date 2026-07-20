@@ -9,14 +9,16 @@ The repository is organized into distinct microservices to ensure scalability an
 ```text
 camarin-ai/
 ├── frontend/          # React + Vite SPA (Dashboard, Auth, Image View, Framer Motion animations)
+│   └── nginx/         # NGINX reverse proxy configuration for seamless frontend/API routing
 ├── backend/           # Express.js REST API (User Auth, Rate Limiting, File Uploads)
 ├── worker/            # Node.js Background Worker (BullMQ, LangChain, Google Vision API)
-├── nginx/             # NGINX reverse proxy configuration for seamless frontend/API routing
 ├── docker-compose.yml # Full stack container orchestration
 └── README.md          # You are here
 ```
 
 ## 🏗️ Architecture & Workflow
+
+![Architecture Diagram](./Architecture.png)
 
 The platform uses an asynchronous event-driven architecture to prevent compute-heavy AI tasks from blocking user interactions.
 
@@ -47,39 +49,45 @@ graph TD
 Create a `.env` file in the root directory (alongside `docker-compose.yml`) containing the following variables:
 
 ```env
-# -------------------------
-# Database & Cache Layer
-# -------------------------
+# ==========================================
+# Global (Database / Cache / Environment)
+# ==========================================
 MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net
 DB_NAME=camarin-ai
 REDIS_HOST=redis
 REDIS_PORT=6379
+NODE_ENV=development
 
-# -------------------------
-# Backend Authentication
-# -------------------------
+# ==========================================
+# Backend Configuration
+# ==========================================
+PORT=8000
+FRONTEND_URL=http://localhost:3000
 ACCESS_TOKEN_SECRET=your_super_secret_access_key
 REFRESH_TOKEN_SECRET=your_super_secret_refresh_key
+ACCESS_TOKEN_TTL=15m
+REFRESH_TOKEN_TTL=7d
 
-# -------------------------
-# Supabase Storage
-# -------------------------
+# ==========================================
+# Worker Configuration
+# ==========================================
+PORT=8001
+GEMINI_API_KEY=your_gemini_api_key_here
+CAPTION_MODEL=gemini-2.5-flash
+# The path where Google Vision credentials will be mounted in the worker container
+GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-vision.json 
+
+# ==========================================
+# Supabase Storage (Shared Backend/Worker)
+# ==========================================
 SUPABASE_URL=https://<your-project>.supabase.co
 SUPABASE_KEY=ey...
 SUPABASE_BUCKET=image-insight
 
-# -------------------------
-# AI Services (Worker)
-# -------------------------
-GEMINI_API_KEY=AI...
-# The path where Google Vision credentials will be mounted in the worker container
-GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-vision.json 
-
-# -------------------------
+# ==========================================
 # Frontend Configuration
-# -------------------------
-# Required for the API to boot and accept CORS requests
-FRONTEND_URL=http://localhost:3000
+# ==========================================
+VITE_BACKEND_URL=http://localhost:3000
 VITE_API_BASE_URL=http://localhost:3000/api/v1
 ```
 
