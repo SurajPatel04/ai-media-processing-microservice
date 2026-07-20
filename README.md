@@ -46,56 +46,77 @@ graph TD
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the root directory (alongside `docker-compose.yml`) containing the following variables:
+The project uses separate `.env` files for each microservice. You must create these files in their respective directories before starting the application.
+
+### 1. Backend (`backend/.env`)
+
+Create this file to configure the Express API:
 
 ```env
-# ==========================================
-# Global (Database / Cache / Environment)
-# ==========================================
-MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net
+PORT=8000
+NODE_ENV=development
+
+# Database & Cache
+MONGODB_URL=mongodb://mongodb:27017
 DB_NAME=camarin-ai
 REDIS_HOST=redis
 REDIS_PORT=6379
-NODE_ENV=development
 
-# ==========================================
-# Backend Configuration
-# ==========================================
-PORT=8000
-FRONTEND_URL=http://localhost:3000
-ACCESS_TOKEN_SECRET=your_super_secret_access_key
-REFRESH_TOKEN_SECRET=your_super_secret_refresh_key
+# Authentication (Generate your own random strings)
+ACCESS_TOKEN_SECRET=your_super_secret_access_token_key_here
+REFRESH_TOKEN_SECRET=your_super_secret_refresh_token_key_here
 ACCESS_TOKEN_TTL=15m
 REFRESH_TOKEN_TTL=7d
 
-# ==========================================
-# Worker Configuration
-# ==========================================
+# Supabase Storage
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_or_service_key
+SUPABASE_BUCKET=your_storage_bucket_name
+
+# Frontend Origin for CORS
+FRONTEND_URL=http://localhost:3000
+```
+
+### 2. Worker (`worker/.env`)
+
+Create this file to configure the AI processing worker:
+
+```env
 PORT=8001
+NODE_ENV=development
+
+# Database & Cache
+MONGODB_URL=mongodb://mongodb:27017
+DB_NAME=camarin-ai
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# Supabase Storage (Must match backend)
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_or_service_key
+SUPABASE_BUCKET=your_storage_bucket_name
+
+# AI Services
 GEMINI_API_KEY=your_gemini_api_key_here
 CAPTION_MODEL=gemini-2.5-flash
-# The path where Google Vision credentials will be mounted in the worker container
-GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-vision.json 
+# Docker maps the gcp-key.json to this exact path automatically
+GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json
+```
 
-# ==========================================
-# Supabase Storage (Shared Backend/Worker)
-# ==========================================
-SUPABASE_URL=https://<your-project>.supabase.co
-SUPABASE_KEY=ey...
-SUPABASE_BUCKET=image-insight
+### 3. Frontend (`frontend/.env`)
 
-# ==========================================
-# Frontend Configuration
-# ==========================================
+Create this file to configure the React application:
+
+```env
 VITE_BACKEND_URL=http://localhost:3000
 VITE_API_BASE_URL=http://localhost:3000/api/v1
 ```
 
-*Note: You must also place your actual `google-vision.json` key file inside the `worker/credentials/` folder so it can be mounted securely into the Docker container.*
+*Note: You must also place your actual Google Vision JSON key file at `worker/gcp-key.json` so Docker can mount it securely into the worker container.*
 
 ### Obtaining API Keys
 - **Gemini API Key:** Go to [Google AI Studio](https://aistudio.google.com/), sign in, and create an API key.
-- **Google Vision JSON:** Go to the [Google Cloud Console](https://console.cloud.google.com/), enable the Cloud Vision API, create a Service Account, generate a JSON key, and save it as `google-vision.json`.
+- **Google Vision JSON:** Go to the [Google Cloud Console](https://console.cloud.google.com/), enable the Cloud Vision API, create a Service Account, generate a JSON key, and save it as `gcp-key.json` inside the `worker/` directory.
 - **Supabase:** Create a project at [Supabase](https://supabase.com). Go to Project Settings > API to get your `SUPABASE_URL` and `SUPABASE_KEY`. Create a public storage bucket named `image-insight` (or whatever you set `SUPABASE_BUCKET` to).
 - **MongoDB:** Use [MongoDB Atlas](https://www.mongodb.com/atlas) to spin up a free cluster and get your connection string.
 
@@ -104,8 +125,8 @@ VITE_API_BASE_URL=http://localhost:3000/api/v1
 The entire stack can be launched via Docker Compose. It automatically wires up the Frontend, Backend, Worker, Redis, and NGINX Proxy.
 
 1. Ensure Docker and Docker Compose are installed.
-2. Ensure your `.env` file is populated in the root directory.
-3. Ensure your Google Vision JSON key is located at `worker/credentials/google-vision.json`.
+2. Ensure your `.env` files are populated in `backend/`, `worker/`, and `frontend/`.
+3. Ensure your Google Vision JSON key is located at `worker/gcp-key.json`.
 4. Build and start the services:
 
 ```bash
