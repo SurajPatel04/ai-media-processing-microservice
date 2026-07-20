@@ -1,5 +1,5 @@
 import { logError, logWarn } from "../utils/logHelper.utils.js";
-import { env } from "../config/env.js";
+import { env } from "../config/env.config.js";
 
 export const errorHandler = (err, req, res, next) => {
     let statusCode = err.statusCode || 500;
@@ -38,7 +38,7 @@ export const errorHandler = (err, req, res, next) => {
         });
 
         const errors = Object.values(err.errors || {}).map((val) => val.message);
-        
+
         return res.status(400).json({
             success: false,
             message: "Validation Error",
