@@ -6,7 +6,7 @@ export const logError = (err, req, extra = {}) => {
         statusCode: err.statusCode,
         method: req?.method,
         path: req?.originalUrl,
-        userId: req?.user?.id,
+        userId: req?.user?._id,
         requestId: req?.id,
         ip: req?.ip,
         ...extra,
@@ -17,7 +17,7 @@ export const logWarn = (message, req, extra = {}) => {
     logger.warn(extra.context || message, {
         method: req?.method,
         path: req?.originalUrl,
-        userId: req?.user?.id,
+        userId: req?.user?._id,
         requestId: req?.id,
         ip: req?.ip,
         ...extra,
@@ -28,7 +28,7 @@ export const logInfo = (message, req, extra = {}) => {
     logger.info(extra.context || message, {
         method: req?.method,
         path: req?.originalUrl,
-        userId: req?.user?.id,
+        userId: req?.user?._id,
         requestId: req?.id,
         ip: req?.ip,
         ...extra,
