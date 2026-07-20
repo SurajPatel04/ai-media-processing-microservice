@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "Camarin AI - Media Processing API",
+    "description": "Complete API collection for the Camarin AI ImageInsight backend. Covers authentication (register/login/refresh/logout), user profile, and the job lifecycle (upload/list/details/retry).\n\nSetup:\n1. Set the `baseUrl` collection variable (defaults to http://localhost:8000/api/v1). For the deployed system, change it to your deployed API origin + /api/v1.\n2. Run 'Login' first \u2014 the API sets HttpOnly accessToken/refreshToken cookies, and Postman stores them automatically. All subsequent authenticated requests will send them.\n3. For 'Upload Image', select a real JPG/PNG/WEBP file in the form-data `image` field (max 5MB).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "jobId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"fullName\": \"Suraj Patel\",\n    \"email\": \"suraj@example.com\",\n    \"password\": \"raja12345@\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Create a new user account. Requires fullName (min 3 chars), a valid email, and a password (8-64 chars)."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"suraj@example.com\",\n    \"password\": \"raja12345@\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate. On success the API sets HttpOnly accessToken and refreshToken cookies; Postman stores them automatically for subsequent requests."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh-token"]
+            },
+            "description": "Rotates the access token using the refreshToken cookie. No request body \u2014 the refresh token is read from the HttpOnly cookie set at login."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Revokes all refresh tokens for the user and clears auth cookies. Requires a valid accessToken cookie."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Returns the currently authenticated user's profile. Requires a valid accessToken cookie."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "",
+                  "description": "A JPG, PNG, or WEBP file, max 5MB. File content is validated by magic bytes, not just extension."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "upload"]
+            },
+            "description": "Upload an image (multipart/form-data, field name 'image'). Creates a job with status 'pending', enqueues it for AI processing, and returns the jobId immediately (202). Requires auth."
+          },
+          "response": []
+        },
+        {
+          "name": "List Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Returns the authenticated user's jobs (newest first, paginated) plus aggregate stats (total, completed, processing, flagged). Each item includes a fresh signed image URL. Requires auth."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}"]
+            },
+            "description": "Returns the full result for a single job (caption, labels, labelDetails, detectedObjects, safeSearch, flagged status, metadata) plus a signed image URL. Set the {{jobId}} variable first. Requires auth."
+          },
+          "response": []
+        },
+        {
+          "name": "Retry Job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "retry"]
+            },
+            "description": "Re-enqueues a FAILED job (returns 400 for any non-failed job). Set the {{jobId}} variable to a failed job's id. Requires auth."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
