@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 import { RefreshToken } from "../models/refreshToken.model.js"
 import ms from "ms";
-import { env } from "../config/env.js";
+import { env } from "../config/env.config.js";
 
 export const generateAccessToken = (user) => {
     const secret = env.accessTokenSecret.secret
