@@ -79,7 +79,7 @@ export const loginUser = asyncHandler(
         const cookieOptions = {
             httpOnly: true,
             secure: env.nodeEnv === "production",
-            sameSite: "strict",
+            sameSite: "lax",
         };
 
         res.cookie("accessToken", accessToken, {
@@ -116,7 +116,7 @@ export const logoutUserFromAllDevices = asyncHandler(
         const cookieOptions = {
             httpOnly: true,
             secure: env.nodeEnv === "production",
-            sameSite: "strict",
+            sameSite: "lax",
         };
 
         res.clearCookie("accessToken", cookieOptions);
@@ -176,7 +176,7 @@ export const refreshAccessToken = asyncHandler(
         const cookieOptions = {
             httpOnly: true,
             secure: env.nodeEnv === "production",
-            sameSite: "strict",
+            sameSite: "lax",
         };
 
         res.cookie("accessToken", accessToken, {
