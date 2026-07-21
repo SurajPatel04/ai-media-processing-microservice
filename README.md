@@ -1,5 +1,9 @@
 # Camarin AI - ImageInsight
 
+**🚀 Live Demo:** [https://imageinsight.surajpatel.dev](https://imageinsight.surajpatel.dev)
+
+![ImageInsight Dashboard](./ImageInsight%20Dashboard.png)
+
 ImageInsight is a robust, asynchronous image processing platform. It provides users with a clean, brutalist-inspired dashboard to upload images, which are then queued and processed in the background by AI workers. The system extracts captions, detects objects, and identifies scene details using a combination of LangChain (Gemini) and Google Cloud Vision.
 
 ## 📁 Project Structure
