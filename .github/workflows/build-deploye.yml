@@ -93,18 +93,18 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/camarin-api:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/imageinsight-api:latest
           
       - name: Build and Push AI Worker
         uses: docker/build-push-action@v5
         with:
           context: ./worker
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/camarin-worker:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/imageinsight-worker:latest
           
       - name: Build and Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/camarin-frontend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/imageinsight-frontend:latest
