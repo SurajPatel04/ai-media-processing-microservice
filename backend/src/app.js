@@ -29,7 +29,7 @@ const allowedOrigins = (() => {
         }
         return [process.env.FRONTEND_URL];
     }
-    return ["http://localhost:3000", "http://localhost:5173"];
+    return ["http://localhost", "http://localhost:3000", "http://localhost:5173"];
 })();
 app.use(
     cors({
