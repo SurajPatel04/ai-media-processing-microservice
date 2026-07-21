@@ -59,8 +59,6 @@ The worker is designed to be scaled horizontally without database collisions.
 
 **Important:** Before running Docker, you must place your Google Cloud Service Account JSON file in the `worker/` directory and name it `gcp-key.json`. The `docker-compose` setup mounts this file directly into the container so the worker can authenticate.
 
-> [!NOTE]
-> The `docker-compose.yml` file uses hardcoded `environment:` blocks to override your `.env` values for `REDIS_HOST` and `MONGODB_URL` so that they automatically point to the bundled Docker containers. **If you want to use managed external providers (like MongoDB Atlas or Upstash Redis), you must remove these `environment` overrides from the compose file.**
 
 ```bash
 # Start the full stack (API, Worker, Redis, MongoDB)
