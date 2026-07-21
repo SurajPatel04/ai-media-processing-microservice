@@ -104,15 +104,6 @@ CAPTION_MODEL=gemini-2.5-flash
 GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json
 ```
 
-### 3. Frontend (`frontend/.env`)
-
-Create this file to configure the React application:
-
-```env
-VITE_BACKEND_URL=http://localhost
-VITE_API_BASE_URL=http://localhost/api/v1
-```
-
 *Note: You must also place your actual Google Vision JSON key file at `worker/gcp-key.json` so Docker can mount it securely into the worker container.*
 
 ### Obtaining API Keys
@@ -126,7 +117,7 @@ VITE_API_BASE_URL=http://localhost/api/v1
 The entire stack can be launched via Docker Compose. It automatically wires up the Frontend, Backend, Worker, Redis, and NGINX Proxy.
 
 1. Ensure Docker and Docker Compose are installed.
-2. Ensure your `.env` files are populated in `backend/`, `worker/`, and `frontend/`.
+2. Ensure your `.env` files are populated in `backend/` and `worker/`.
 3. Ensure your Google Vision JSON key is located at `worker/gcp-key.json`.
 4. Build and start the services:
 
