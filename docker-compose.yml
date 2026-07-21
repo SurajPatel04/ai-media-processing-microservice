@@ -1,0 +1,79 @@
+services:
+  redis:
+    image: redis:7-alpine
+    # ports:
+    #   - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    # ports:
+    #   - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  ai-worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    env_file:
+      - ./worker/.env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json
+
+    volumes:
+      # Must place a valid gcp-key.json in your worker folder!
+      - ./worker/gcp-key.json:/app/gcp-key.json:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    restart: unless-stopped
+
+volumes:
+  mongo-data:

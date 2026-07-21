@@ -1,0 +1,110 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  backend:
+    name: Backend API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Run Unit Tests
+        working-directory: ./backend
+        run: npm test
+        env:
+          MONGODB_URL: mongodb://localhost:27017
+          DB_NAME: test
+          ACCESS_TOKEN_SECRET: testsecret
+          REFRESH_TOKEN_SECRET: testsecret
+          REDIS_HOST: localhost
+          SUPABASE_URL: http://localhost
+          SUPABASE_KEY: testkey
+          SUPABASE_BUCKET: testbucket
+
+  worker:
+    name: AI Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        working-directory: ./worker
+        run: npm install
+
+      - name: Create dummy GCP key
+        working-directory: ./worker
+        run: echo '{}' > dummy.json
+
+      - name: Run Unit Tests
+        working-directory: ./worker
+        run: npm test
+        env:
+          MONGODB_URL: mongodb://localhost:27017
+          DB_NAME: test
+          REDIS_HOST: localhost
+          SUPABASE_URL: http://localhost
+          SUPABASE_KEY: testkey
+          SUPABASE_BUCKET: testbucket
+          GEMINI_API_KEY: testkey
+          GOOGLE_APPLICATION_CREDENTIALS: dummy.json
+
+  push-images:
+    name: Build & Push Images
+    needs: [backend, worker]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and Push Backend API
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/camarin-api:latest
+          
+      - name: Build and Push AI Worker
+        uses: docker/build-push-action@v5
+        with:
+          context: ./worker
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/camarin-worker:latest
+          
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/camarin-frontend:latest
