@@ -4,6 +4,7 @@ import SignupFormDemo from "@/components/signup-form-demo";
 import api from "@/services/api";
 import { IconBrandGithub } from "@tabler/icons-react";
 import toast from "react-hot-toast";
+import logoImg from "@/assets/ImageInsight.webp";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function SignupPage() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 relative">
       <div className="absolute top-8 left-8 md:left-12">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <img src="/src/assets/ImageInsight.webp" alt="Logo" className="h-8 w-8 object-contain" />
+          <img src={logoImg} alt="Logo" className="h-8 w-8 object-contain" />
           <span className="text-xl font-bold tracking-tight text-white">ImageInsight</span>
         </Link>
       </div>

@@ -4,6 +4,7 @@ import api from "@/services/api";
 import { IconLogout, IconLayoutDashboard, IconUser, IconLoader2 } from "@tabler/icons-react";
 import toast from "react-hot-toast";
 import { ConfirmationModal } from "./ui/confirmation-modal";
+import logoImg from "@/assets/ImageInsight.webp";
 
 export default function AppLayout() {
   const [user, setUser] = useState(null);
@@ -49,7 +50,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-[#050505] flex text-neutral-200 font-sans">
       <aside className="w-64 border-r border-white/10 bg-black flex flex-col p-5 hidden md:flex shrink-0 h-screen sticky top-0 print:hidden">
         <div className="flex items-center gap-3 mb-10 px-1">
-          <img src="/src/assets/ImageInsight.webp" alt="Logo" className="h-8 w-8 object-contain" />
+          <img src={logoImg} alt="Logo" className="h-8 w-8 object-contain" />
           <div>
             <h1 className="text-sm font-bold tracking-tight text-white">ImageInsight</h1>
           </div>
@@ -90,7 +91,7 @@ export default function AppLayout() {
 
       <nav className="md:hidden fixed top-0 w-full z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl flex h-14 items-center justify-between px-4 print:hidden">
         <Link to="/dashboard" className="flex items-center gap-2">
-          <img src="/src/assets/ImageInsight.webp" alt="Logo" className="h-7 w-7 object-contain" />
+          <img src={logoImg} alt="Logo" className="h-7 w-7 object-contain" />
         </Link>
         <button onClick={() => setIsLogoutModalOpen(true)} className="text-neutral-500 hover:text-red-400">
           <IconLogout size={16} />
