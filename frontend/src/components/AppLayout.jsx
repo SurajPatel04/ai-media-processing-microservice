@@ -66,7 +66,7 @@ export default function AppLayout() {
               }`}
           >
             <IconLayoutDashboard size={18} />
-            Jobs
+            Dashboard
           </Link>
         </nav>
 
