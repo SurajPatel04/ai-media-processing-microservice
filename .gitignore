@@ -44,3 +44,7 @@ coverage/
 
 # AI Coding Assistant Caches
 .gemini/
+
+# Scratch & Windows Artifacts
+backend/all.js
+*:Zone.Identifier
