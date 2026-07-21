@@ -12,6 +12,7 @@ camarin-ai/
 │   └── nginx/         # NGINX reverse proxy configuration for seamless frontend/API routing
 ├── backend/           # Express.js REST API (User Auth, Rate Limiting, File Uploads)
 ├── worker/            # Node.js Background Worker (BullMQ, LangChain, Google Vision API)
+├── postman/           # Postman Collection for API testing
 ├── docker-compose.yml # Full stack container orchestration
 └── README.md          # You are here
 ```
@@ -74,7 +75,7 @@ SUPABASE_KEY=your_supabase_anon_or_service_key
 SUPABASE_BUCKET=your_storage_bucket_name
 
 # Frontend Origin for CORS
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost
 ```
 
 ### 2. Worker (`worker/.env`)
@@ -108,8 +109,8 @@ GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json
 Create this file to configure the React application:
 
 ```env
-VITE_BACKEND_URL=http://localhost:3000
-VITE_API_BASE_URL=http://localhost:3000/api/v1
+VITE_BACKEND_URL=http://localhost
+VITE_API_BASE_URL=http://localhost/api/v1
 ```
 
 *Note: You must also place your actual Google Vision JSON key file at `worker/gcp-key.json` so Docker can mount it securely into the worker container.*
@@ -134,8 +135,16 @@ docker compose up --build
 ```
 
 The application will be available at:
-- **Frontend / Dashboard**: `http://localhost:3000`
-- **Backend API**: `http://localhost:3000/api/v1`
+- **Frontend / Dashboard**: `http://localhost`
+- **Backend API**: `http://localhost/api/v1`
+
+## 📮 API Testing (Postman)
+
+A Postman collection is included to help you easily test the backend endpoints directly. 
+
+1. Open Postman and click **Import**.
+2. Select the `postman/camarin-ai.postman_collection.json` file.
+3. Use the imported requests to test Authentication (Register/Login) and Jobs (Upload/Retry/Status).
 
 ## 🧠 Assumptions & Design Decisions
 
@@ -144,7 +153,7 @@ Where the spec was open-ended, the following decisions were made:
 - **Notification Strategy (Flagged Content)**: The spec required notifying someone when NSFW content is detected. Rather than introducing an external dependency like SendGrid (email) or Slack Webhooks, the system relies on a **structured log-and-persist strategy**. It logs a `[WARN] FLAGGED_CONTENT_ALERT` and updates a `flaggedNotifiedAt` timestamp in MongoDB. In a real environment, log aggregators (Datadog/CloudWatch) would trigger alerts based on this log.
 - **Asynchronous Processing**: Decoupled the API and Worker using Redis and BullMQ. This ensures that the web server remains highly responsive and can accept uploads at a massive scale without being bogged down by slow AI inference times.
 - **Stateless/Stateful Auth Hybrid**: Access tokens are stateless JWTs for fast, database-free verification. Refresh tokens are stateful (hashed and stored in MongoDB), allowing administrators to revoke compromised sessions remotely.
-- **Proxy Routing**: By using NGINX to route both `/` and `/api` through a single domain (`localhost:3000`), we eliminate complex CORS preflight issues and guarantee that `HttpOnly` `sameSite="lax"` auth cookies flow securely between the browser and backend.
+- **Proxy Routing**: By using NGINX to route both `/` and `/api` through a single domain (`localhost`), we eliminate complex CORS preflight issues and guarantee that `HttpOnly` `sameSite="lax"` auth cookies flow securely between the browser and backend.
 
 ## ⚠️ Known Limitations
 
